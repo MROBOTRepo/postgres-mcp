@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Oryx cache (CRITICAL - prevent this from ending up in image)
+oryx-manifest.toml
+output.tar.zst
+.oryx
+
+# Azure
+.deployment
+.funcignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+.env.local
+.env.*.local
+*.log
+.pytest_cache/

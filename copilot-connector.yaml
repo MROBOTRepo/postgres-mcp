@@ -1,0 +1,29 @@
+swagger: '2.0'
+info:
+  title: Postgres DMDL MCP
+  description: >-
+    Acceso de solo lectura a la base PostgreSQL dmdl-server. Permite inspeccionar
+    el esquema y ejecutar consultas SELECT para responder preguntas de negocio.
+  version: 1.0.0
+
+host: copilot-postgres-mcp-caevb3e3dqh8f5dx.canadacentral-01.azurewebsites.net
+
+basePath: /
+schemes:
+  - https
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /:
+    post:
+      summary: Postgres DMDL MCP Server
+      description: Endpoint Streamable HTTP del servidor MCP.
+      operationId: InvokeMCP
+      x-ms-agentic-protocol: mcp-streamable-1.0
+      responses:
+        default:
+          description: Respuesta MCP

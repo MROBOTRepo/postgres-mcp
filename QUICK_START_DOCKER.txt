@@ -1,0 +1,70 @@
+═══════════════════════════════════════════════════════════════════════════
+  DOCKER DEPLOYMENT - QUICK START (5 steps)
+═══════════════════════════════════════════════════════════════════════════
+
+STEP 1: Build image in Azure (no local Docker needed)
+───────────────────────────────────────────────────────
+az acr build \
+  --registry copilotpostgres \
+  --image postgres-mcp:latest \
+  C:\Users\mreba\MCP_Datalake
+
+Wait for "Build complete" message.
+
+STEP 2: Go to Azure Portal
+───────────────────────────────
+https://portal.azure.com
+→ App Service: copilot-postgres-mcp-caevb3e3dqh8f5dx
+→ Deployment Center (left menu)
+→ Source: Container Registries
+→ Registry: copilotpostgres
+→ Image: postgres-mcp
+→ Tag: latest
+→ SAVE
+
+Wait 2-3 minutes for restart.
+
+STEP 3: Verify environment variables
+────────────────────────────────────
+App Service → Configuration → Application settings
+
+These must be set:
+  PGHOST = your-postgres.database.windows.net
+  PGDATABASE = your_db
+  PGUSER = your_user
+  PGPASSWORD = your_password
+  PGSSLMODE = require
+
+If not set, add them and SAVE.
+
+STEP 4: Check logs
+──────────────────
+App Service → Log Stream (bottom left)
+
+Should see:
+  "FastMCP servidor en http://0.0.0.0:8000/"
+
+If you see Python errors, check the logs for details.
+
+STEP 5: Test
+────────────
+Open browser:
+  https://copilot-postgres-mcp-caevb3e3dqh8f5dx.azurewebsites.net/
+
+Should show:
+  MCP Server (proxy mode)
+
+If you see 404 or 500, check Step 4 logs.
+
+═══════════════════════════════════════════════════════════════════════════
+
+NEXT DEPLOYMENTS (after making code changes):
+
+  az acr build \
+    --registry copilotpostgres \
+    --image postgres-mcp:latest \
+    C:\Users\mreba\MCP_Datalake
+
+That's it. App Service auto-pulls the new image within 1-2 minutes.
+
+═══════════════════════════════════════════════════════════════════════════
