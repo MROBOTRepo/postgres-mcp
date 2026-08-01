@@ -1,17 +1,27 @@
-"""Entry point que Oryx detecta - Limpia caché de Oryx al iniciar"""
+"""Entry point - Inicia FastMCP en thread y sirve WSGI"""
 import os
 import sys
+import threading
+import time
+import logging
 
-# Limpiar caché de Oryx que interfiere con deployments
-print("⚙️  Limpiando caché de Oryx...", file=sys.stderr)
-for file in ['/home/site/wwwroot/oryx-manifest.toml', '/home/site/wwwroot/output.tar.zst']:
-    if os.path.exists(file):
-        try:
-            os.remove(file)
-            print(f"✓ Eliminado: {file}", file=sys.stderr)
-        except Exception as e:
-            print(f"⚠ No se pudo eliminar {file}: {e}", file=sys.stderr)
+logging.basicConfig(level="INFO")
+LOG = logging.getLogger("app")
 
-from server import app
+# Importar server y config
+from server import mcp, LOG as server_log
 
-__all__ = ['app']
+# Iniciar FastMCP en thread ANTES de que Gunicorn intente conectar
+LOG.info("Iniciando FastMCP en thread...")
+mcp_thread = threading.Thread(
+    target=lambda: mcp.run(transport="streamable-http"),
+    daemon=True
+)
+mcp_thread.start()
+time.sleep(3)  # Espera a que FastMCP inicie
+LOG.info("FastMCP iniciado")
+
+# WSGI app simple
+def app(environ, start_response):
+    start_response('200 OK', [('Content-Type', 'text/plain')])
+    return [b'MCP Server running\n']
