@@ -1,12 +1,28 @@
-"""WSGI Proxy a FastMCP - Redirige requests a puerto 9000"""
+"""Entry point - Inicia FastMCP en thread y proxy a él"""
+import os
+import sys
+import threading
+import time
 import urllib.request
 import logging
 
 logging.basicConfig(level="INFO")
-LOG = logging.getLogger("proxy")
+LOG = logging.getLogger("app")
+
+# Importar y iniciar FastMCP
+from server import mcp
+
+LOG.info("Iniciando FastMCP en thread...")
+mcp_thread = threading.Thread(
+    target=lambda: mcp.run(transport="streamable-http"),
+    daemon=True
+)
+mcp_thread.start()
+time.sleep(3)
+LOG.info("FastMCP iniciado")
 
 def app(environ, start_response):
-    """WSGI app que hace proxy a FastMCP en 9000"""
+    """WSGI Proxy a FastMCP en 9000"""
     path = environ.get('PATH_INFO', '/')
     method = environ['REQUEST_METHOD']
     content_length = int(environ.get('CONTENT_LENGTH', 0) or 0)
